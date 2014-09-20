@@ -24,51 +24,53 @@ public class TowerAI : MonoBehaviour {
 	void OnDrawGizmos() {
 		if(DebugMode == true) {
 			Gizmos.color = Color.green;
-			Gizmos.DrawRay (transform.position, transform.forward * SearchRange);
-			Gizmos.DrawRay (transform.position, transform.forward * -1 * SearchRange);
-			Gizmos.DrawRay (transform.position, transform.right * SearchRange);
-			Gizmos.DrawRay (transform.position, transform.right * -1 * SearchRange);
-			Gizmos.DrawRay (transform.position, (transform.forward * -1 + transform.right * -1) * SearchRange);
-			Gizmos.DrawRay (transform.position, (transform.forward * -1 + transform.right) * SearchRange);
-			Gizmos.DrawRay (transform.position, (transform.forward + transform.right* -1) * SearchRange);
-			Gizmos.DrawRay (transform.position, (transform.forward + transform.right) * SearchRange);
+
 		}
 	}
 	IEnumerator Seek() {
 		while(true) {
+			bool Found = false;
 			RaycastHit hit;
 			Quaternion rot = new Quaternion();
 			rot.eulerAngles = new Vector3(0,45 * Mathf.Sin(RotateSpeed * Time.time) - 90,0);
 			transform.rotation = rot;
 			transform.Rotate (Vector3.up * RotateSpeed, Space.World);
-			if(Physics.Raycast(transform.position, transform.forward, out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, transform.right, out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, transform.right * -1, out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, transform.forward * -1, out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, (transform.forward + transform.right), out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, (transform.forward * -1 + transform.right * -1), out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, (transform.forward * -1 + transform.right), out hit, SearchRange) ||
-			   Physics.Raycast(transform.position, (transform.forward + transform.right * -1), out hit, SearchRange)) {
-				if(hit.collider.tag.Equals("Enemy")) {
-					//call attack coroutine
-					Debug.Log("Switch to Attack!");
-					Target = hit.collider.gameObject;
-					Debug.Log(hit.collider.tag);
-					yield return StartCoroutine("Attack");
+			//enemy detection
+			Collider[] hits = Physics.OverlapSphere(transform.position, SearchRange);
+			foreach(Collider c in hits) {
+				if(c.tag.Equals("Enemy")) {
+					if(Physics.Linecast(transform.position, c.gameObject.transform.position, out hit)) {
+						if(hit.collider.tag.Equals("Enemy")) {
+						Found = true;
+						Target = c.gameObject;
+						break;
+						}
+					}
+				}
+				else {
+					continue;
 				}
 			}
+			if(Found == true) {
+				//call attack coroutine
+				Debug.Log("Switch to Attack!");
+				Found = false;
+				yield return StartCoroutine("Attack");
+			}
+
 			yield return new WaitForFixedUpdate();
 		}
 	}
 	IEnumerator Attack() {
 		while(true) {
 			RaycastHit hit;
-			if(Vector3.Distance(transform.position, Target.transform.position) <= SearchRange &&
-			   Physics.Linecast(transform.position, Target.transform.position,out hit) && 
-			   !hit.collider.tag.Equals("Untagged")) { 
+			if(Vector3.Distance(transform.position, Target.transform.position) <= (SearchRange + 0.5) &&
+			   Physics.Linecast(transform.position, Target.transform.position, out hit) &&
+			   hit.collider.tag.Equals("Enemy")) {
 				transform.LookAt(Target.transform);
 			}
-			else{
+			else {
+
 				//call seek coroutine
 				Debug.Log("Switch to Seek!");
 				Target = null;
