@@ -15,11 +15,11 @@ public class TowerAI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-
-	
+		
+		
 	}
 	void Update() {
-
+		
 	}
 	void OnDrawGizmos() {
 		if(DebugMode == true) {
@@ -64,7 +64,8 @@ public class TowerAI : MonoBehaviour {
 		while(true) {
 			RaycastHit hit;
 			if(Vector3.Distance(transform.position, Target.transform.position) <= SearchRange &&
-			   Physics.Linecast(transform.position, Target.transform.rotation,out hit,LineCastIgnore)) { 
+			   Physics.Linecast(transform.position, Target.transform.position,out hit) && 
+			   !hit.collider.tag.Equals("Untagged")) { 
 				transform.LookAt(Target.transform);
 			}
 			else{
@@ -75,7 +76,7 @@ public class TowerAI : MonoBehaviour {
 			}
 			yield return new WaitForFixedUpdate();
 		}
-			
+		
 	}
-
+	
 }
