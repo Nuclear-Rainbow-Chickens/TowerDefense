@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mobs>
+	<wave>
+		<stage type="grunt" value="2"/>
+		<stage type="runner" value="2"/>
+		<stage type="tank" value="2" />
+	</wave>
+	
+</mobs>

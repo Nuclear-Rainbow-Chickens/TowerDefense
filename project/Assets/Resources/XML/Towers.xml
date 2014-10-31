@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<turrets>
+	<pistol range = "10" speed = "1" damage = "3" hp = "5" />
+	<mg range = "12" speed = "0.5" damage = "1" hp = "5" />
+</turrets>

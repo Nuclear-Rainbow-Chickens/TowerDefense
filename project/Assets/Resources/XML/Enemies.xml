@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<enemies>
+	<grunt hp="8" points="100" cash="15" speed="4"/>
+	<runner hp="4" points="125" cash="10" speed="7"/>
+	<tank hp="100" points="150" cash="20" speed="2" />
+</enemies>
